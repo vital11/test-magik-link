@@ -8,23 +8,27 @@
 </head>
 
 <body>
-    <nav class="navbar navbar-dark bg-dark justify-content-end">
-        <div class="nav">
+    <nav class="navbar navbar-dark bg-dark ">
+        <a class="btn btn-dark" href="{% url 'home' %}">Home</a>
+        <div class="nav justify-content-end">
         {% if user.is_authenticated %}
             <span class="navbar-text mr-3">Hi {{ user.username }}!</span>
-            <a class="btn btn-warning mr-3" href="{% url 'logout' %}">Logout</a>
-            <a class="btn btn-info" href="{% url 'admin:index' %}">Админка</a>
+            <a class="btn btn-secondary mr-3" href="{% url 'logout' %}">Logout</a>
         {% else %}
             <span class="navbar-text mr-3">You are not logged in</span>
-            <a class="btn btn-success mr-2" href="{% url 'login' %}">Login</a>
-            <a class="btn btn-primary" href="{% url 'signup' %}">Sign Up</a>
+            <a class="btn btn-secondary mr-3" href="{% url 'login' %}">Login</a>
         {% endif %}
+            <a class="btn btn-primary mr-3" href="{% url 'signup' %}">Signup</a>
+            <a class="btn btn-success mr-3" href="{% url 'magic_send' %}">Magic</a>
+            <a class="btn btn-info" href="{% url 'admin:index' %}">Админка</a>
         </div>
     </nav>
 
     <main>
+
     {% block content %}
     {% endblock content %}
+
     </main>
 
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
