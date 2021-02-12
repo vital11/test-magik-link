@@ -2,19 +2,25 @@
 
 {% block title %}Magic{% endblock title %}
 
-
 {% block content %}
+
 <div class="container" style="margin-top: 50px;">
     <div class="row justify-content-center">
         <div class="col-md-5 shadow-sm p-3 mb-5 bg-white rounded">
-            <h2>Login</h2>
+            <h3 class="bg-light p-4">Login existing User with Magic link url</h3>
             <form method="post">
                 {% csrf_token %}
-                {{ form.as_p }}
-                <button type="submit">Log In</button>
+                <div class="form-group">
+                    {{ form.as_p }}
+                </div>
+                <button type="submit" class="btn btn-success">Send</button>
             </form>
         </div>
     </div>
 </div>
+
 {% endblock content %}
+
+
+
 

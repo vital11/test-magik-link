@@ -1,11 +1,10 @@
 from django.urls import path
-from django.views.generic.base import TemplateView
-from users.views import activate, signup, home, magic_send, magic_activate
+from users.views import home, activate, signup, login_existing_user, activate_existing_user
 
 urlpatterns = [
         path('', home, name='home'),
         path('signup/', signup, name="signup"),
         path('activate/<uidb64>/<token>/', activate, name='activate'),
-        path('magic_send/', magic_send, name="magic_send"),
-        path('magic_activate/<uidb64>/<token>/', magic_activate, name='magic_activate'),
+        path('login_existing_user/', login_existing_user, name="login_existing_user"),
+        path('activate_existing_user/<uidb64>/<token>/', activate_existing_user, name='activate_existing_user'),
 ]

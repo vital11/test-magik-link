@@ -2,6 +2,7 @@ from django.contrib.auth import get_user_model, login
 from django.contrib.auth.models import User
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.sites.shortcuts import get_current_site
+from django.core.exceptions import ValidationError
 from django.core.mail import EmailMessage
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
@@ -10,11 +11,8 @@ from django.urls import reverse_lazy
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 
-from .forms import SignUpForm, MagicForm
+from .forms import SignUpForm, LoginExistingUser
 
-from django.contrib.auth.forms import PasswordChangeForm
-
-from django.contrib.auth.forms import PasswordResetForm
 
 UserModel = get_user_model()
 
@@ -23,23 +21,35 @@ def home(request):
     return render(request, 'users/home.html')
 
 
-def signup(request):
+# LOGIN
+def login_existing_user(request):
     if request.method == 'GET':
-        return render(request, 'users/signup.html')
+        form = LoginExistingUser()
+        return render(request, 'users/login_existing_user.html', {'form': form})
     if request.method == 'POST':
-        form = SignUpForm(request.POST)
+        form = LoginExistingUser(request.POST)
         if form.is_valid():
-            # Create an inactive user with no password:
-            user = form.save(commit=False)
+            # Get existing user from DB:
+            user_email = form.cleaned_data.get('email')
+
+            # # Проверка email на exists() в БД во вьюхе:
+            # user_exist = get_user_model().objects.filter(email=user_email).exists()
+            # if user_exist:
+            #     user = get_user_model().objects.get(email=user_email)
+            #     user.is_active = False
+            #     user.save()
+            # else:
+            #     return HttpResponse('Пользователь с таким email не существует.')
+
+            user = get_user_model().objects.get(email=user_email)
             user.is_active = False
-            user.set_unusable_password()
             user.save()
 
             # Send an email to the user with the token:
             mail_subject = 'Activate your account.'
             current_site = get_current_site(request)
             message = render_to_string('users/users_active_email.html', {
-                'user': 'test@email.com',     # user
+                'user': user.email,     # user
                 'domain': current_site.domain,
                 'uid': urlsafe_base64_encode(force_bytes(user.pk)),
                 'token': default_token_generator.make_token(user),
@@ -48,13 +58,12 @@ def signup(request):
             email = EmailMessage(mail_subject, message, to=[to_email])
             email.send()
             return HttpResponse('Please confirm your email address to complete the registration')
-            # return HttpResponse('Please confirm your email address to complete the registration', message)
     else:
-        form = SignUpForm()
-    return render(request, 'users/signup.html', {'form': form})
+        form = LoginExistingUser()
+    return render(request, 'users/login_existing_user.html', {'form': form})
 
 
-def activate(request, uidb64, token):
+def activate_existing_user(request, uidb64, token):
     try:
         uid = urlsafe_base64_decode(uidb64).decode()
         user = UserModel._default_manager.get(pk=uid)
@@ -74,54 +83,50 @@ def activate(request, uidb64, token):
         return HttpResponse('Activation link is invalid!')
 
 
-def magic_send(request):
+# SIGNUP
+def signup(request):
     if request.method == 'GET':
-        return render(request, 'users/magic_send.html')
+        form = SignUpForm()
+        return render(request, 'users/signup.html', {'form': form})
     if request.method == 'POST':
-        form = MagicForm(request.POST)
+        form = SignUpForm(request.POST)
         if form.is_valid():
+            # Create an inactive user with no password:
             user = form.save(commit=False)
-            # user.set_unusable_password()
-            user.authenticate()
+            user.is_active = False
+            user.set_unusable_password()
+            user.save()
 
-            # Рассылка
-            # current_site = get_current_site(request)    # Если несколько сайтов, то текст письма для них будет разный
-            # mail_subject = 'Activate your account.'
-            # message = render_to_string('users/users_active_email.html', {
-            #     'user': user,
-            #     'domain': current_site.domain,
-            #     'uid': urlsafe_base64_encode(force_bytes(user.pk)),
-            #     'token': default_token_generator.make_token(user),
-            # })
-            # to_email = form.cleaned_data.get('email')
-            # email = EmailMessage(
-            #     mail_subject, message, to=[to_email]
-            # )
-            # email.send()
-
-            return HttpResponse('Yuo are Signed In')
+            # Send an email to the user with the token:
+            mail_subject = 'Activate your account.'
+            current_site = get_current_site(request)
+            message = render_to_string('users/users_active_email.html', {
+                'user': user.email,     # user
+                'domain': current_site.domain,
+                'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+                'token': default_token_generator.make_token(user),
+            })
+            to_email = form.cleaned_data.get('email')
+            email = EmailMessage(mail_subject, message, to=[to_email])
+            email.send()
+            return HttpResponse('Please confirm your email address to complete the registration')
     else:
-        form = MagicForm()
-    return render(request, 'users/magic_send.html', {'form': form})
+        form = SignUpForm()
+    return render(request, 'users/signup.html', {'form': form})
 
 
-def magic_activate(request):
+def activate(request, uidb64, token):
     try:
         uid = urlsafe_base64_decode(uidb64).decode()
         user = UserModel._default_manager.get(pk=uid)
     except(TypeError, ValueError, OverflowError, User.DoesNotExist):
         user = None
     if user is not None and default_token_generator.check_token(user, token):
+        # activate user and login:
         user.is_active = True
-        # user.set_unusable_password()
         user.save()
-        # return redirect('home.html')
-        # https://youtu.be/kzN_VCFG9NM (37:00)
-        # return HttpResponse('Thank you for your email confirmation. Now you can login your account.')
+        login(request, user)
         return HttpResponseRedirect(reverse_lazy(home))
     else:
         return HttpResponse('Activation link is invalid!')
-
-
-
 

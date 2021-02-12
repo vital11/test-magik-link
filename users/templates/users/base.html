@@ -1,9 +1,8 @@
-<!-- templates/base.html -->
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Home</title>
+    <title>{% block title %}{% endblock title %}</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
 </head>
 
@@ -12,23 +11,23 @@
         <a class="btn btn-dark" href="{% url 'home' %}">Home</a>
         <div class="nav justify-content-end">
         {% if user.is_authenticated %}
-            <span class="navbar-text mr-3">Hi {{ user.username }}!</span>
+            <span class="navbar-text mr-3">Hi, {{ user.email }}</span>
             <a class="btn btn-secondary mr-3" href="{% url 'logout' %}">Logout</a>
+            {% if user.is_staff or user.is_admin %}
+                <a class="btn btn-primary mr-3" href="{% url 'signup' %}">Signup</a>
+                <a class="btn btn-success mr-3" href="{% url 'login_existing_user' %}">Magic</a>
+                <a class="btn btn-info" href="{% url 'admin:index' %}">Админка</a>
+            {% endif %}
         {% else %}
             <span class="navbar-text mr-3">You are not logged in</span>
-            <a class="btn btn-secondary mr-3" href="{% url 'login' %}">Login</a>
+<!--            {{ comment }}<a class="btn btn-secondary mr-3" href="{% url 'login' %}">Login</a> {{ endcomment }}-->
         {% endif %}
-            <a class="btn btn-primary mr-3" href="{% url 'signup' %}">Signup</a>
-            <a class="btn btn-success mr-3" href="{% url 'magic_send' %}">Magic</a>
-            <a class="btn btn-info" href="{% url 'admin:index' %}">Админка</a>
         </div>
     </nav>
 
     <main>
-
     {% block content %}
     {% endblock content %}
-
     </main>
 
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
