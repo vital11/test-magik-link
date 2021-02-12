@@ -6,7 +6,7 @@
 
 <div class="container" style="margin-top: 50px;">
     <div class="row justify-content-center">
-        <div class="col-md-5 shadow-sm p-3 mb-5 bg-white rounded">
+        <div class="col-md-6 shadow-sm p-3 mb-5 bg-white rounded">
             <h3 class="bg-light p-4">Login existing User with Magic link url</h3>
             <form method="post">
                 {% csrf_token %}
@@ -15,6 +15,17 @@
                 </div>
                 <button type="submit" class="btn btn-success">Send</button>
             </form>
+            <div class="bg-light p-4 mt-3">
+                User <span class="text-success">{{ user.email }}</span> checked out the link
+                <span class="text-success p-2">{{ user.views }}</span> times
+            </div>
+
+            {% comment %}
+            {% for user in get_user_model() %}
+                <div class="bg-light p-4 mt-3">Views: {{ user.views }}</div>
+            {% endfor %}
+            {% endcomment %}
+
         </div>
     </div>
 </div>
