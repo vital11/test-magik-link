@@ -5,8 +5,8 @@
 __pycache__
 db.sqlite3
 media
-users_project/settings.py
-todo.txt
+local_settings.py
+prod_settings.py
 
 # Backup files #
 *.bak
@@ -95,3 +95,13 @@ Control.ca-list
 Control.ca-bundle
 Control.system-ca-bundle
 GitHub.sublime-settings
+
+# Ignore Django Migrations in Development if you are working on team
+
+# Only for Development only
+**/migrations/**
+!**/migrations
+!**/migrations/__init__.py
+*backend/*/migrations/*
+!*backend/*/migrations
+!*backend/*/migrations/__init__.py
