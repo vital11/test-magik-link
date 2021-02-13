@@ -5,8 +5,8 @@
 __pycache__
 db.sqlite3
 media
-local_settings.py
-prod_settings.py
+users_project/local_settings.py
+users_project/prod_settings.py
 
 # Backup files #
 *.bak
