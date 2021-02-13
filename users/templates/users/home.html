@@ -11,8 +11,10 @@
     </div>
         {% if user.is_staff or user.is_admin %}
         <div class="alert alert-info" role="alert">
-            <li>You can Login existing users with "Magic" button</li>
-            <li>You also can Signup and Login new users with "Signup" button</li>
+            <li>You can Login existing users with "Magic Login" button,
+                and check how many times that user ask for access to this amazing site.
+            </li>
+            <li>You also can Signup and Login new users with "Magic Signup" button.</li>
         </div>
         {% endif %}
     {% else %}

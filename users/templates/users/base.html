@@ -14,8 +14,8 @@
             <span class="navbar-text mr-3">Hi, {{ user.email }}</span>
             <a class="btn btn-secondary mr-3" href="{% url 'logout' %}">Logout</a>
             {% if user.is_staff or user.is_admin %}
-                <a class="btn btn-primary mr-3" href="{% url 'magic_signup' %}">Signup</a>
-                <a class="btn btn-success mr-3" href="{% url 'magic_login' %}">Magic</a>
+                <a class="btn btn-primary mr-3" href="{% url 'magic_signup' %}">Magic Signup</a>
+                <a class="btn btn-success mr-3" href="{% url 'magic_login' %}">Magic Login</a>
                 <a class="btn btn-info" href="{% url 'admin:index' %}">Админка</a>
             {% endif %}
         {% else %}
@@ -26,8 +26,20 @@
     </nav>
 
     <main>
-    {% block content %}
-    {% endblock content %}
+
+    {% if not user.is_authenticated %}
+    <div class="alert alert-danger" role="alert">
+        You don't have access to our site.
+        <br>
+        If you are existing or new User, tell us your Email and we will send you a magic link for full access.
+    </div>
+    {% endif %}
+
+    {% if request.user.is_authenticated %}
+        {% block content %}
+        {% endblock content %}
+    {% endif %}
+
     </main>
 
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>

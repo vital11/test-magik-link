@@ -1,6 +1,6 @@
 from django.contrib.auth import get_user_model, login
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.models import User
 from django.contrib.auth.tokens import default_token_generator
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
@@ -20,6 +20,7 @@ class HomeView(LoginRequiredMixin, TemplateView):
     login_url = '/home/'
 
 
+@login_required(login_url='/home/')
 def magic_login(request):
     if request.method == 'GET':
         form = LoginForm()
@@ -44,11 +45,10 @@ def magic_login(request):
             return HttpResponse('Please confirm your email address to complete the registration')
     else:
         form = LoginForm()
-
-    users = UserModel.objects.all()
-    return render(request, 'users/magic_login.html', context={'form': form, 'users': users})
+    return render(request, 'users/magic_login.html', context={'form': form})
 
 
+@login_required(login_url='/home/')
 def magic_signup(request):
     if request.method == 'GET':
         form = SignupForm()
