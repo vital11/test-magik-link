@@ -11,21 +11,16 @@
             <form method="post">
                 {% csrf_token %}
                 <div class="form-group">
-                    {{ form.as_p }}
+                {{ form.as_p }}
                 </div>
                 <button type="submit" class="btn btn-success">Send</button>
             </form>
+            {% for user in users %}
             <div class="bg-light p-4 mt-3">
                 User <span class="text-success">{{ user.email }}</span> checked out the link
                 <span class="text-success p-2">{{ user.views }}</span> times
             </div>
-
-            {% comment %}
-            {% for user in get_user_model() %}
-                <div class="bg-light p-4 mt-3">Views: {{ user.views }}</div>
             {% endfor %}
-            {% endcomment %}
-
         </div>
     </div>
 </div>

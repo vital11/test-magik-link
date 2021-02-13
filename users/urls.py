@@ -1,10 +1,9 @@
 from django.urls import path
-from users.views import home, activate, signup, login_existing_user, activate_existing_user
+from users.views import HomeView, magic_signup, magic_login, activate
 
 urlpatterns = [
-        path('', home, name='home'),
-        path('signup/', signup, name="signup"),
+        path('', HomeView.as_view(), name='home'),
+        path('magic_signup/', magic_signup, name="magic_signup"),
+        path('magic_login/', magic_login, name="magic_login"),
         path('activate/<uidb64>/<token>/', activate, name='activate'),
-        path('login_existing_user/', login_existing_user, name="login_existing_user"),
-        path('activate_existing_user/<uidb64>/<token>/', activate_existing_user, name='activate_existing_user'),
 ]
